@@ -23,9 +23,6 @@ CREATE Table sightings (
     notes TEXT
 )
 
-
-
-
 insert INTO
     rangers (name, region)
 VALUES (
@@ -125,6 +122,8 @@ values (
     );
 
 SELECT * FROM sightings;
+
+
 -- 1
 insert into
     rangers (name, region)
@@ -134,7 +133,11 @@ values ('Derek Fox', 'Coastal Plains');
 SELECT count(distinct species_id) as unique_species_count
 from sightings;
 -- 3
+
+
 SELECT * from sightings WHERE location LIKE '%pass%';
+
+
 -- 4
 SELECT name, count(sighting_id) as total_sightings
 from rangers
@@ -143,6 +146,7 @@ GROUP BY
     sightings.ranger_id,
     name;
 
+
 -- 5
 SELECT species.common_name
 FROM species
@@ -150,8 +154,10 @@ FROM species
 WHERE
     sightings.species_id IS NULL;
 
-    -- 6
-    select * FROM sightings ORDER BY sighting_time DESC LIMIT 2;
+
+-- 6
+select * FROM sightings ORDER BY sighting_time DESC LIMIT 2;
+
 -- 7
 UPDATE species
 set
@@ -159,13 +165,33 @@ set
 WHERE
     discovery_date < '1800-01-01';
 
-    -- 8
-    SELECT sighting_id,
-     CASE WHEN extract(HOUR FROM sighting_time) < 12 THEN 'Morning'
-        WHEN extract(HOUR FROM sighting_time) >= 12 AND extract(HOUR FROM sighting_time) <= 17 THEN 'Afternoon'
-        ELSE 'Evening' END AS time_of_day from sightings;
-    -- 9
-    DELETE FROM rangers where ranger_id in (
-   SELECT rangers.ranger_id from rangers LEFT JOIN sightings ON rangers.ranger_id = sightings.ranger_id
-WHERE
-    sightings.ranger_id IS NULL);
+-- 8
+SELECT
+    sighting_id,
+    CASE
+        WHEN extract(
+            HOUR
+            FROM sighting_time
+        ) < 12 THEN 'Morning'
+        WHEN extract(
+            HOUR
+            FROM sighting_time
+        ) >= 12
+        AND extract(
+            HOUR
+            FROM sighting_time
+        ) <= 17 THEN 'Afternoon'
+        ELSE 'Evening'
+    END AS time_of_day
+from sightings;
+
+-- 9
+DELETE FROM rangers
+where
+    ranger_id in (
+        SELECT rangers.ranger_id
+        from rangers
+            LEFT JOIN sightings ON rangers.ranger_id = sightings.ranger_id
+        WHERE
+            sightings.ranger_id IS NULL
+    );
